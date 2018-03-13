@@ -51,7 +51,7 @@ update-rc.d oracle-xe defaults 80 01
 ```
     sudo chmod 755 /sbin/chkconfig  
 ```
-6. 設定 kernel 變數 (Oracle 11gR2 XE requires additional kernel parameters)
+6. 設定 kernel 變數 (Oracle 11gR2 XE requires additional kernel parameters) 與驗證
 ```
     sudo vim /etc/sysctl.d/60-oracle.conf
 ```
@@ -62,54 +62,41 @@ net.ipv4.ip_local_port_range=9000 65000
 kernel.sem=250 32000 100 128 
 kernel.shmmax=536870912 
 ```
-7. 驗證
-    Verify the change using the command:
-
+```
     sudo cat /etc/sysctl.d/60-oracle.conf 
-
-    You should see what you entered earlier. Now load the kernel parameters:
-
     sudo service procps start
-
-    Verify the new parameters are loaded using:
-
     sudo sysctl -q fs.file-max
-
-    You should see the file-max value that you entered earlier.
-
-    Set up /dev/shm mount point for Oracle. Create the following file using the command:
-
-    sudo pico /etc/rc2.d/S01shm_load
-
-    Copy the following into the file and save.
-
-    #!/bin/sh
-    case "$1" in
-    start)
-        mkdir /var/lock/subsys 2>/dev/null
-        touch /var/lock/subsys/listener
-        rm /dev/shm 2>/dev/null
-        mkdir /dev/shm 2>/dev/null
-    *)
-        echo error
-        exit 1
-        ;;
-
-    esac 
-
-    Change the permissions of the file using the command:
-
+```
+7. 設定 /dev/shm mount point for Oracle
+```
+    sudo vi /etc/rc2.d/S01shm_load
+```
+```
+#!/bin/sh
+case "$1" in
+start)
+    mkdir /var/lock/subsys 2>/dev/null
+    touch /var/lock/subsys/listener
+    rm /dev/shm 2>/dev/null
+    mkdir /dev/shm 2>/dev/null
+*)
+    echo error
+    exit 1
+    ;;
+ esac 
+```
+````
     sudo chmod 755 /etc/rc2.d/S01shm_load
-
-    Now execute the following commands:
-
     sudo ln -s /usr/bin/awk /bin/awk 
     sudo mkdir /var/lock/subsys 
     sudo touch /var/lock/subsys/listener
+````
+8. 重啟
+```
+    sudo reboot
+```
 
-    Now, Reboot Your System
-
-Step 3: Install Oracle
+### Step 3: Install Oracle
 
     Install the oracle DBMS using the command:
 
@@ -144,7 +131,7 @@ Step 3: Install Oracle
 
     sudo usermod -a -G dba YOURUSERNAME
 
-Step 4: Using the Oracle XE Command Shell
+### Step 4: Using the Oracle XE Command Shell
 
     Start the Oracle XE 11gR2 server using the command:
 
