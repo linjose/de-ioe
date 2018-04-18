@@ -13,6 +13,6 @@ If you already have qgis installed:
 
 If you don't already have it:
 
-`sudo apt-get install qgis`
+`sudo apt-get install qgis python-qgis`
 
 source: https://gis.stackexchange.com/questions/133033/installing-latest-qgis-version-on-ubuntu
